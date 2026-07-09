@@ -6,41 +6,28 @@ async function jobPost(req, res) {
       title,
       description,
       requirements,
-      skills,
-      experience,
-      education,
+      skills,    
       salaryMin,
       salaryMax,
       jobType,
       location,
       workMode,
-      vacancies,
-      status,
+      vacancies,   
       applicationDeadline,
     } = req.body;
 
-    // Basic Validation
-    if (!title || !description || !experience) {
-      return res.status(400).json({
-        success: false,
-        message: "Title, description and experience are required",
-      });
-    }
 
     const newJob = await Job.create({
       title,
       description,
       requirements,
-      skills,
-      experience,
-      education,
+      skills,    
       salaryMin,
       salaryMax,
       jobType,
       location,
       workMode,
-      vacancies,
-      status,
+      vacancies,   
       applicationDeadline,
     });
 

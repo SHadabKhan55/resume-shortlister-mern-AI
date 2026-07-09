@@ -29,17 +29,6 @@ function JobDetail() {
         <div>
             <h1>{job.title}</h1>
 
-            <p>
-                <strong>Description:</strong> {job.description}
-            </p>
-
-            <p>
-                <strong>Experience:</strong> {job.experience} Years
-            </p>
-
-            <p>
-                <strong>Education:</strong> {job.education}
-            </p>
 
             <p>
                 <strong>Location:</strong> {job.location}
@@ -70,12 +59,16 @@ function JobDetail() {
                 {new Date(job.applicationDeadline).toLocaleDateString()}
             </p>
 
+            
+            <p>
+                <strong>Description:</strong> {job.description}
+            </p>
+
             <h3>Requirements</h3>
-            <ul>
-                {job.requirements?.map((item, index) => (
-                    <li key={index}>{item}</li>
-                ))}
-            </ul>
+            <p>
+                <strong>Requirements:</strong> {job.requirements} 
+            </p>
+            
 
             <h3>Skills</h3>
             <ul>
