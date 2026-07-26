@@ -2,8 +2,6 @@ const mongoose = require("mongoose");
 
 const jobSchema = new mongoose.Schema(
   {
-
-
     title: {
       type: String,
       required: true,
@@ -38,7 +36,6 @@ const jobSchema = new mongoose.Schema(
       enum: ["Full-Time", "Part-Time", "Internship", "Contract"],
       default: "Full-Time",
     },
-
     location: {
       type: String,
     },
@@ -69,4 +66,4 @@ const jobSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("Job", jobSchema);
+module.exports = mongoose.model("Jobs", jobSchema);

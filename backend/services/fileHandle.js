@@ -14,32 +14,21 @@ const storage = multer.diskStorage({
   },
 
   filename: function (req, file, cb) {
+    
     cb(null, `${Date.now()}-${file.originalname}`);
   },
 });
 
 const fileFilter = (req, file, cb) => {
-  const allowedMimeTypes = [
-    "application/pdf",
-    "application/msword",
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  ];
+ const allowed = [".pdf",".docx",".doc"]
+    const ext = path.extname(file.originalname).toLowerCase()
+    if(!allowed.includes(ext)){
 
-  if (allowedMimeTypes.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(
-      new Error(
-        "Only PDF, DOC and DOCX files are allowed"
-      ),
-      false
-    );
-  }
-};
+      return cb(new Error("Only PDF, DOC and DOCX files are allowed"),false);
+    }
+    cb(null,true)
+}
 
-const upload = multer({
-  storage,
-  fileFilter,
-});
+const upload = multer({storage,fileFilter});
 
 module.exports = upload;

@@ -1,35 +1,13 @@
 const Job = require("../models/Job");
 const Application = require("../models/Apply")
+const pdf = require("pdf-parse");
+const { pdfTotext } = require("../services/pdfTotext");
+const { analyzeResume } = require("../services/analyzResume");
 async function jobPost(req, res) {
   try {
-    const {
-      title,
-      description,
-      requirements,
-      skills,    
-      salaryMin,
-      salaryMax,
-      jobType,
-      location,
-      workMode,
-      vacancies,   
-      applicationDeadline,
-    } = req.body;
 
 
-    const newJob = await Job.create({
-      title,
-      description,
-      requirements,
-      skills,    
-      salaryMin,
-      salaryMax,
-      jobType,
-      location,
-      workMode,
-      vacancies,   
-      applicationDeadline,
-    });
+    const newJob = await Job.create(req.body);
 
     return res.status(201).json({
       success: true,
@@ -98,6 +76,7 @@ async function applyJob(req, res) {
   try {
     const { jobId, fullName, email } = req.body;
 
+    // Validate
     if (!jobId || !fullName || !email) {
       return res.status(400).json({
         success: false,
@@ -112,11 +91,46 @@ async function applyJob(req, res) {
       });
     }
 
+    // Find Job
+    const job = await Job.findById(jobId);
+
+    if (!job) {
+      return res.status(404).json({
+        success: false,
+        message: "Job not found",
+      });
+    }
+
+    const resumeText = await pdfTotext(req.file.path);
+
+    const aiResult = await analyzeResume(job, resumeText.text);
+
+    const cleanedResult = aiResult
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
+      .trim();
+
+    const parsedResult = JSON.parse(cleanedResult);
+
+    const atsScore = parsedResult.score;
+    const aiFeedback = parsedResult.feedback;
+
+    let status = "Rejected";
+
+    if (atsScore >= 80) {
+      status = "Shortlisted";
+    } else if (atsScore >= 60) {
+      status = "Pending";
+    }
+
     const application = await Application.create({
       jobId,
       fullName,
       email,
-      resume: req.file.path,
+      resume: req.file.filename,
+      atsScore,
+      aiFeedback,
+      status,
     });
 
     return res.status(201).json({
@@ -124,6 +138,7 @@ async function applyJob(req, res) {
       message: "Application submitted successfully",
       application,
     });
+
   } catch (error) {
     console.log(error);
 
